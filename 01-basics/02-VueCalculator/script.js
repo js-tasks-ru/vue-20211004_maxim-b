@@ -1,34 +1,25 @@
  import { createApp } from './vendor/vue.esm-browser.js';
 
+const operations = {
+  sum: '+',
+  subtract: '-',
+  multiply: '*',
+  divide: '/'
+};
+
 // Создайте Vue приложение
 const vm = createApp({
   data() {
     return {
       multiplicand: 0,
       factor: 0,
-      outcome: 0,
       operation: undefined,
-      operations: {
-        sum: '+',
-        subtract: '-',
-        multiply: '*',
-        divide: '/'
-      }
+      operations: operations
     }
   },
-  watch: {
-    operation(NewValue) {
-            this.outcome = eval(this.multiplicand  + this.operations[NewValue] +  this.factor);
-    },
-    multiplicand(NewValue){
-      let operation  = this.operation;
-      this.outcome = eval(this.multiplicand  + this.operations[operation] +  this.factor);
-    },
-    factor(NewValue){
-      let operation = this.operation;
-      this.outcome = eval(this.multiplicand  + this.operations[operation] +  this.factor);
+  computed: {
+    outcome() {
+      return this.operations[this.operation]? eval(this.multiplicand + this.operations[this.operation] + this.factor):0;
     }
   }
 }).mount('#app');
-
-window.vm = vm;
