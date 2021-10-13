@@ -19,7 +19,7 @@ export default defineComponent({
     }
   },
   computed: {
-    time() {
+    datetime() {
       return new Date(this.date).toLocaleDateString('ru-RU', options)
     }
   },
@@ -35,7 +35,7 @@ export default defineComponent({
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time :datetime="date">{{ time }}</time>
+        <time datetime="datetime">{{ datetime }}</time>
       </li>
     </ul>`,
 });
