@@ -13,7 +13,7 @@ export default defineComponent({
     }
   },
   template: `
-    <div class="meetup-cover" v-bind:style="{ backgroundImage: 'url(' + image + ')' }">
+    <div class="meetup-cover" :style="{ backgroundImage: 'url(' + image + ')' }">
         <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>`,
 });
