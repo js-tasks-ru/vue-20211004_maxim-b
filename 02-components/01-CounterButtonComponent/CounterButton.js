@@ -8,8 +8,7 @@ export default defineComponent({
     count: {
       type: Number,
       required: true,
-      default: 0,
-      readonly: false
+      default: 0
     },
   },
   // Шаблон лучше держать максимально простым, а логику выносить в методы

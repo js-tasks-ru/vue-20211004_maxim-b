@@ -19,16 +19,9 @@ export default defineComponent({
     }
   },
   computed: {
-    isoDate() {
-      return new Date(this.date).toISOString().split('T')[0];
-    },
-    formatDate() {
-      return new Date(this.date).toLocaleDateString(navigator.language, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    },
+    datetime() {
+      return new Date(this.date).toLocaleDateString('ru-RU', options)
+    }
   },
   template: `
     <ul class="meetup-info">
@@ -42,7 +35,7 @@ export default defineComponent({
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time :datetime="isoDate">{{ formatDate }}</time>
+        <time :datetime="datetime">{{ datetime }}</time>
       </li>
     </ul>`,
 });
