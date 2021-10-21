@@ -1,18 +1,14 @@
 <template>
-  <div class="dropdown dropdown_opened">
+  <div class="dropdown" @click="changeDropdownOpened" :class="{dropdown_opened: dropdownOpened}">
     <button type="button" class="dropdown__toggle dropdown__toggle_icon">
       <ui-icon icon="tv" class="dropdown__icon" />
-      <span>Title</span>
+      <span>{{ title }}</span>
     </button>
 
     <div class="dropdown__menu" role="listbox">
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
+      <button v-for="option in options" key="option" class="dropdown__item dropdown__item_icon" role="option" :value="option.value" onclick="modelValue = value" type="button">
         <ui-icon icon="tv" class="dropdown__icon" />
-        Option 1
-      </button>
-      <button class="dropdown__item dropdown__item_icon" role="option" type="button">
-        <ui-icon icon="tv" class="dropdown__icon" />
-        Option 2
+        {{ option.text }}
       </button>
     </div>
   </div>
@@ -23,7 +19,29 @@ import UiIcon from './UiIcon';
 
 export default {
   name: 'UiDropdown',
-
+  data() {
+    return {
+      dropdownOpened: false
+    }
+  },
+  methods: {
+    changeDropdownOpened(){
+      this.dropdownOpened = !this.dropdownOpened;
+    },
+  },
+  props: {
+    options: {
+      type: Object,
+      required: true
+    },
+    modelValue: {
+      type: String,
+    },
+    title: {
+      type: String,
+      required: true
+    }
+  },
   components: { UiIcon },
 };
 </script>
