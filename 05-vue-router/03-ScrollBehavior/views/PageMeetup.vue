@@ -25,31 +25,19 @@
 </template>
 
 <script>
-import UiContainer from '../components/UiContainer.vue';
-import UiAlert from '../components/UiAlert.vue';
-import { fetchMeetup } from '../api.js';
-import MeetupCover from '../../../../03-sfc/01-VBindCover/solution/components/MeetupCover';
+import UiContainer from '../components/UiContainer';
+import UiAlert from '../components/UiAlert';
+import MeetupCover from '../components/MeetupCover';
+import { fetchMeetup } from '../api';
 
 export default {
   name: 'PageMeetup',
 
   components: { MeetupCover, UiAlert, UiContainer },
 
-  // С хуками роутера можно получить данные ещё до перехода на маршрут и рендеринга компонента маршрута
-  // При этом в зависимости от результата получения данных определить, нужно ли переходить и куда
-
   beforeRouteEnter(to) {
-    // Гард (хук) может вернуть:
-    // 1. undefined | true - разрешает успешно переходить на маршрут to
-    // 2. false - отменяет переход
-    // 3. RouteLocationRaw (строка с путём или объект, описывающий путь) - переходит на конкретный маршрут
-    // 4. (vm) => {} - разрешает успешно переходить на маршрут + вызывает после перехода callback с экземпляром компонента
-    // Во всех случаях можно возвращать значение асинхронно через Promise
-
     return fetchMeetup(to.params.meetupId)
       .then((meetup) => {
-        // Экземпляра компонента маршрута ещё нет, мы не можем к нему обратиться, нет this
-        // Но вы можем передать коллбек, который выполнится с ним
         return (vm) => {
           vm.setMeetup(meetup);
         };
@@ -58,7 +46,6 @@ export default {
   },
 
   beforeRouteUpdate(to, from) {
-    // Запрашиваем новые данные, если обновился meetupId
     if (to.params.meetupId !== from.params.meetupId) {
       this.meetup = null;
       return fetchMeetup(to.params.meetupId)
@@ -82,38 +69,6 @@ export default {
       meetup: null,
     };
   },
-
-  // Вместо получения meetupId из параметров маршрута сразу получаем их из входного параметра компонента с props: true
-
-  // computed: {
-  //   meetupId() {
-  //     return this.$route.params.meetupId;
-  //   },
-  // },
-
-  // Текущий маршрут - реактивный объект
-
-  // watch: {
-  //   meetupId: {
-  //     immediate: true,
-  //     handler(newMeetupId) {
-  //       this.meetup = null;
-  //       fetchMeetup(newMeetupId)
-  //         .then((meetup) => {
-  //           this.setMeetup(meetup);
-  //         });
-  //     },
-  //   }
-  // },
-
-  // Данные можно получать традиционно после создания экземпляра компонента
-
-  // mounted() {
-  //   this.meetup = null;
-  //   fetchMeetup(this.meetupId).then((meetup) => {
-  //     this.setMeetup(meetup);
-  //   });
-  // },
 
   methods: {
     setMeetup(meetup) {
