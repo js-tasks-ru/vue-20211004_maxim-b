@@ -6,7 +6,11 @@
     </button>
 
     <div class="dropdown__menu" role="listbox">
-      <button v-for="option in options" key="option" class="dropdown__item dropdown__item_icon" role="option" :value="option.value" onclick="modelValue = value" type="button">
+      <button v-for="option in options" key="option" class="dropdown__item dropdown__item_icon" role="option"
+              :value="option.value"
+              :checked="modelValue === option.value"
+              @change="$emit('update:modelValue', $event.target.value)"
+              type="button">
         <ui-icon icon="tv" class="dropdown__icon" />
         {{ option.text }}
       </button>
@@ -43,6 +47,7 @@ export default {
     }
   },
   components: { UiIcon },
+  emits: ['update:modelValue']
 };
 </script>
 
