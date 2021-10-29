@@ -40,8 +40,7 @@ export default {
       if(this.$route.query.from) {
         this.$router.push(this.$route.query.from);
       } else {
-
-        this.$router.push('/');
+        this.$router.push(this.$router.resolve({name: 'index'}));
       }
     },
   },
