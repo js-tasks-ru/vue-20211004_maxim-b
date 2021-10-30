@@ -1,7 +1,7 @@
 <template>
   <div class="toasts" v-if="toasts.length">
-    <div v-for="toast in toasts" class="toast" :class="{'toast_success': toast.type === 'success', 'toast_error': toast.type === 'error'}">
-      <ui-icon class="toast__icon" :icon="toast.type === 'success'? 'check-circle':'alert-circle'" />
+    <div v-for="toast in toasts" class="toast" :class="toastClass[toast.type]">
+      <ui-icon class="toast__icon" :icon="toastIcon[toast.type]" />
       <span>{{ toast.message }}</span>
     </div>
   </div>
@@ -10,24 +10,45 @@
 <script>
 import UiIcon from './UiIcon';
 
+const toastClass = {
+  'success': 'toast_success',
+  'error': 'toast_error'
+};
+
+const toastIcon = {
+  'success': 'check-circle',
+  'error': 'alert-circle'
+}
+
 export default {
   name: 'TheToaster',
   data() {
     return {
-      toasts: []
+      toasts: [],
+      toastClass: toastClass,
+      toastIcon: toastIcon,
+      timersId:[]
     }
   },
   methods: {
     success(message) {
       this.toasts.push({type: 'success', message: message});
-      setTimeout(() => this.removeToast(), 5000);
+      let timerId = setTimeout(() => this.removeToast(), 5000);
+      this.timersId.push(timerId);
     },
     error(message) {
       this.toasts.push({type: 'error', message: message});
-      setTimeout(() => this.removeToast(), 5000);
+      let timerId = setTimeout(() => this.removeToast(), 5000);
+      this.timersId.push(timerId);
     },
     removeToast() {
       this.toasts.shift();
+    }
+  },
+  beforeUnmount() {
+    let timerId;
+    for(timerId in this.timersId) {
+      clearTimeout(this.timersId[timerId]);
     }
   },
   components: { UiIcon },
