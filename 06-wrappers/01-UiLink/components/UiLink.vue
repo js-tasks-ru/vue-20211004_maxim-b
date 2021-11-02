@@ -13,10 +13,6 @@
 <script>
 export default {
   name: 'UiLink',
-  //inheritAttrs: false,
-  created() {
-    console.log(this.$attrs);
-  }
 };
 </script>
 
