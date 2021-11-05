@@ -1,18 +1,16 @@
 <template>
-  <template v-if="this.$attrs.tag === 'router-link'">
-    <router-link class="link" :to="this.$attrs.to"><slot/></router-link>
-  </template>
-  <template v-else-if="this.$attrs.tag === 'a'">
-    <a class="link"><slot/></a>
-  </template>
-  <template v-else>
-    <router-link class="link" :to="this.$attrs.to"><slot/></router-link>
-  </template>
+  <component :is="tag"><slot/></component>
 </template>
 
 <script>
 export default {
   name: 'UiLink',
+  props: {
+    tag: {
+      type: [String, Object],
+      default: 'router-link'
+    }
+  }
 };
 </script>
 
