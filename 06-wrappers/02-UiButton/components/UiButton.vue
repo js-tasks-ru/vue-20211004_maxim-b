@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" class="button" :class="[{'button_block': block}, buttonClass]" :type="tag === 'button' && $attrs.type !== 'button'? 'button':null" ><slot/></component>
+  <component :is="tag" class="button" :class="[{'button_block': block}, buttonClass]" :type="buttonType" ><slot/></component>
 </template>
 
 <script>
@@ -23,7 +23,7 @@ export default {
       return 'button_' + this.variant;
     },
     buttonType() {
-      return this.tag !== 'button'? 'button':this.tag;
+      return this.tag === 'button' && this.$attrs.type !== 'button'? 'button':null;
     }
   }
 };
