@@ -7,7 +7,7 @@ export default {
   name: 'UiLink',
   props: {
     tag: {
-      type: [String, Object],
+      type: String,
       default: 'router-link'
     }
   }
