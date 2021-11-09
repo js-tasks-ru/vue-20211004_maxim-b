@@ -14,6 +14,7 @@ export default {
       type: [Boolean, Array]
     },
   },
+  inheritAttrs: false,
   emits: ['update:modelValue'],
   computed: {
     checkedArray: {
