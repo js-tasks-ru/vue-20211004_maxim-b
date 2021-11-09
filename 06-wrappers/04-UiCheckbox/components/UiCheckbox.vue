@@ -19,11 +19,9 @@ export default {
   computed: {
     checkedArray: {
       get() {
-        console.log(this.modelValue);
         return this.modelValue;
       },
       set(value) {
-        console.log(this.modelValue);
         this.$emit('update:modelValue', value);
       },
     },
