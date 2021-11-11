@@ -1,16 +1,17 @@
 <template>
   <div class="dropdown" @click="changeDropdownOpened" :class="{dropdown_opened: dropdownOpened}">
-    <button type="button" class="dropdown__toggle" :class="{dropdown__toggle_icon: isIconsExist}">
-      <ui-icon :icon="getIcon" class="dropdown__icon" />
-      <span>{{ getTitle }}</span>
+    <button type="button" class="dropdown__toggle" :class="{dropdown__toggle_icon: isIconsExist()}">
+      <ui-icon :icon="icon" class="dropdown__icon"/>
+      <span>{{ currentTitle }}</span>
     </button>
 
     <div class="dropdown__menu" role="listbox" v-show="dropdownOpened">
-      <button v-for="option in options" key="option" class="dropdown__item" :class="{dropdown__item_icon: isIconsExist}" role="option"
+      <button v-for="option in options" key="option" class="dropdown__item"
+              :class="{dropdown__item_icon: isIconsExist()}" role="option"
               :value="option.value"
               @click="$emit('update:modelValue', option.value)"
               type="button">
-        <ui-icon :icon="option.icon? option.icon:'tv'" :class="{dropdown__icon: option.icon}" />
+        <ui-icon v-if="option.icon" :icon="option.icon" :class="{dropdown__icon: option.icon}"/>
         {{ option.text }}
       </button>
     </div>
@@ -28,8 +29,14 @@ export default {
     }
   },
   methods: {
-    changeDropdownOpened(){
+    changeDropdownOpened() {
       this.dropdownOpened = !this.dropdownOpened;
+    },
+    isIconExist(option) {
+      return option.icon;
+    },
+    isIconsExist() {
+      return this.options.some(this.isIconExist);
     },
   },
   props: {
@@ -45,41 +52,29 @@ export default {
       required: true
     }
   },
-  components: { UiIcon },
+  components: {UiIcon},
   computed: {
-    getTitle() {
-      let modelValueText = this.options.find((object) => {
-          if(object.value === this.modelValue) {
-            return object;
-          }
-      });
-      if(modelValueText && modelValueText.text) {
-        return modelValueText.text;
+    currentTitle() {
+      let modelValue = this.currentObject;
+      if (modelValue && modelValue.text) {
+        return modelValue.text;
       }
       return this.title;
     },
-    getIcon () {
-      let modelValue = this.options.find((object) => {
-        if(object.value === this.modelValue) {
+    icon() {
+      let modelValue = this.currentObject;
+      if (modelValue && modelValue.icon) {
+        return modelValue.icon;
+      }
+    },
+    currentObject() {
+      return this.options.find((object) => {
+        if (object.value === this.modelValue) {
           return object;
         }
       });
-      if(modelValue && modelValue.icon) {
-        return modelValue.icon;
-      }
-      return 'tv';
-    },
-    isIconsExist() {
-      let isIconExists = false;
-      for(let option in this.options) {
-        if(this.options[option].icon) {
-          isIconExists = true;
-          break;
-        }
-      }
-      return isIconExists;
     }
-  }
+  },
 };
 </script>
 
