@@ -72,7 +72,7 @@ export default {
     isIconsExist() {
       let isIconExists = false;
       for(let option in this.options) {
-        if(option.icon) {
+        if(this.options[option].icon) {
           isIconExists = true;
           break;
         }
