@@ -1,12 +1,12 @@
 <template>
   <div class="dropdown" @click="changeDropdownOpened" :class="{dropdown_opened: dropdownOpened}">
-    <button type="button" class="dropdown__toggle dropdown__toggle_icon">
-      <ui-icon icon="tv" class="dropdown__icon" />
+    <button type="button" class="dropdown__toggle" :class="{dropdown__toggle_icon: isIconsExist}">
+      <ui-icon :icon="getIcon" class="dropdown__icon" />
       <span>{{ getTitle }}</span>
     </button>
 
-    <div class="dropdown__menu" role="listbox" v-show="options">
-      <button v-for="option in options" key="option" class="dropdown__item dropdown__item_icon" role="option"
+    <div class="dropdown__menu" role="listbox" v-show="dropdownOpened">
+      <button v-for="option in options" key="option" class="dropdown__item" :class="{dropdown__item_icon: isIconsExist}" role="option"
               :value="option.value"
               @click="$emit('update:modelValue', option.value)"
               type="button">
@@ -57,6 +57,27 @@ export default {
         return modelValueText.text;
       }
       return this.title;
+    },
+    getIcon () {
+      let modelValue = this.options.find((object) => {
+        if(object.value === this.modelValue) {
+          return object;
+        }
+      });
+      if(modelValue && modelValue.icon) {
+        return modelValue.icon;
+      }
+      return 'tv';
+    },
+    isIconsExist() {
+      let isIconExists = false;
+      for(let option in this.options) {
+        if(option.icon) {
+          isIconExists = true;
+          break;
+        }
+      }
+      return isIconExists;
     }
   }
 };
