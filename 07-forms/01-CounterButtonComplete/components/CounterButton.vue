@@ -21,14 +21,12 @@ export default {
   },
   watch: {
     count: {
-      deep: true,
       immediate: true,
       handler() {
         this.localCount = this.count;
       },
     },
     localCount: {
-      deep: true,
       handler(newValue) {
         this.$emit('update:count', newValue);
       },
