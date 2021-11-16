@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash-es';
 export default {
   name: 'CounterButton',
   data () {
@@ -25,13 +24,13 @@ export default {
       deep: true,
       immediate: true,
       handler() {
-        this.localCount = cloneDeep(this.count);
+        this.localCount = this.count;
       },
     },
     localCount: {
       deep: true,
       handler(newValue) {
-        this.$emit('update:count', cloneDeep(newValue));
+        this.$emit('update:count', newValue);
       },
     },
   },
