@@ -33,7 +33,6 @@
       <meetup-agenda-item-form
         v-for="(agendaItem, index) in localMeetup.agenda"
         :key="agendaItem.id"
-         :agenda-item="localMeetup.agenda"
          v-model:agenda-item="localMeetup.agenda[index]"
          class="meetup-form__agenda-item"
          @remove="removeAgendaItem(index)"
@@ -105,7 +104,11 @@ export default {
 
   methods: {
     addAgendaItem() {
-      const newItem = createAgendaItem();
+      let newItem = createAgendaItem();
+      if(this.localMeetup.agenda.length) {
+        newItem.startsAt = this.localMeetup.agenda.slice(-1)[0].endsAt
+      }
+      console.log(newItem);
       this.localMeetup.agenda.push(newItem);
     },
 
