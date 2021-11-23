@@ -1,8 +1,15 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label class="image-uploader__preview image-uploader__preview-loading" :style="src && `--bg-url: url('${src}')`" @click.stop.prevent="handleClick">
+      <span class="image-uploader__text">{{ src ? 'Удалить' : 'Загрузить изображение' }}</span>
+      <input
+        ref="input"
+        type="file"
+        accept="image/*"
+        class="image-uploader__input"
+        v-bind="$attrs"
+        @change="mockFileSelect"
+      />
     </label>
   </div>
 </template>
@@ -10,6 +17,43 @@
 <script>
 export default {
   name: 'UiImageUploader',
+  inheritAttrs: false,
+  props: {
+    preview: {
+      type: String
+    },
+    uploader: {
+      type: Function
+    }
+  },
+  emits: ['upload', 'select', 'error', 'remove'],
+  data() {
+    return {
+      src: this.preview,
+    };
+  },
+  methods: {
+    mockFileSelect() {
+      const file = new File(['abc'], 'abc.jpeg', {
+        type: 'image/jpeg',
+      });
+      this.$emit('select', file);
+    },
+
+    mockRemoveFile() {
+      this.src = null;
+      this.$refs.input.value = '';
+      this.$emit('remove');
+    },
+
+    handleClick() {
+      if (this.src) {
+        this.mockRemoveFile();
+      } else {
+        this.mockFileSelect();
+      }
+    },
+  },
 };
 </script>
 
