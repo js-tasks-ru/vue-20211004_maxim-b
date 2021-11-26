@@ -1,38 +1,54 @@
 <template>
   <fieldset class="agenda-item-form">
     <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
-      <ui-icon icon="trash" />
+      <ui-icon icon="trash"/>
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" v-model="agendaItem.type" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown title="Тип" v-model="agendaItem.type" :options="$options.agendaItemTypeOptions" name="type"/>
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" v-model="agendaItem.startsAt" />
+          <ui-input type="time" placeholder="00:00" name="startsAt" v-model="agendaItem.startsAt"/>
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" v-model="agendaItem.endsAt" />
+          <ui-input type="time" placeholder="00:00" name="endsAt" v-model="agendaItem.endsAt"/>
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Тема">
-      <ui-input name="title" v-model="agendaItem.title" />
-    </ui-form-group>
-    <ui-form-group label="Докладчик">
-      <ui-input name="speaker" v-model="agendaItem.speaker" />
-    </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" v-model="agendaItem.description" />
-    </ui-form-group>
-    <ui-form-group label="Язык">
-      <ui-dropdown title="Язык" :options="$options.talkLanguageOptions" name="language"  v-model="agendaItem.language"/>
-    </ui-form-group>
+    <template v-if="agendaItem.type === 'talk'">
+      <ui-form-group label="Тема">
+        <ui-input name="title" v-model="agendaItem.title"/>
+      </ui-form-group>
+      <ui-form-group label="Докладчик">
+        <ui-input name="speaker" v-model="agendaItem.speaker"/>
+      </ui-form-group>
+      <ui-form-group label="Описание">
+        <ui-input multiline name="description" v-model="agendaItem.description"/>
+      </ui-form-group>
+      <ui-form-group label="Язык">
+        <ui-dropdown title="Язык" :options="$options.talkLanguageOptions" name="language"
+                     v-model="agendaItem.language"/>
+      </ui-form-group>
+    </template>
+    <template v-else-if="agendaItem.type === 'other'">
+      <ui-form-group label="Заголовок">
+        <ui-input name="title" v-model="agendaItem.title"/>
+      </ui-form-group>
+      <ui-form-group label="Описание">
+        <ui-input multiline name="description" v-model="agendaItem.description"/>
+      </ui-form-group>
+    </template>
+    <template v-else="">
+      <ui-form-group label="Нестандартный текст (необязательно)">
+        <ui-input name="title" v-model="agendaItem.title"/>
+      </ui-form-group>
+    </template>
   </fieldset>
 </template>
 
@@ -71,10 +87,12 @@ const agendaItemTypeOptions = Object.entries(agendaItemDefaultTitles).map(([type
 }));
 
 const talkLanguageOptions = [
-  { value: null, text: 'Не указано' },
-  { value: 'RU', text: 'RU' },
-  { value: 'EN', text: 'EN' },
+  {value: null, text: 'Не указано'},
+  {value: 'RU', text: 'RU'},
+  {value: 'EN', text: 'EN'},
 ];
+
+const zeroPad = (num, places) => String(num).padStart(places, '0')
 
 export default {
   name: 'MeetupAgendaItemForm',
@@ -82,8 +100,39 @@ export default {
   agendaItemTypeOptions,
   talkLanguageOptions,
 
-  components: { UiIcon, UiFormGroup, UiInput, UiDropdown },
-
+  components: {UiIcon, UiFormGroup, UiInput, UiDropdown},
+  watch: {
+    'agendaItem.startsAt':  function(val, oldVal) {
+      this.changeAgendaItemEndsAt(val, oldVal);
+    },
+  },
+  methods: {
+    changeAgendaItemEndsAt(val, oldVal) {
+      const curTime = parseInt(val);
+      const oldTime = parseInt(oldVal);
+      const diffTime = curTime - oldTime;
+      let [endAtHour, endAtTime] = this.agendaItem.endsAt.split(":");
+      let hour = parseInt(endAtHour);
+      if(hour > 0) {
+        hour += parseInt(diffTime);
+        if(hour < 0 || hour > 23) {
+          hour = Math.abs(24 - Math.abs(hour));
+        }
+        this.agendaItem.endsAt = [zeroPad(hour,2), endAtTime].join(":");
+      }
+    }
+  },
+  computed: {
+    agendaItem: {
+      get() {
+        return this.agendaItem;
+      },
+      set(value) {
+        this.$emit('update:agendaItem', value);
+      },
+    },
+  },
+  emits: ['update:agendaItem'],
   props: {
     agendaItem: {
       type: Object,
