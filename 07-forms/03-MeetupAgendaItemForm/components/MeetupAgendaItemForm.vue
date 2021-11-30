@@ -59,6 +59,7 @@ import UiInput from './UiInput';
 import UiDropdown from './UiDropdown';
 
 import { isEqual } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 
 const agendaItemTypeIcons = {
   registration: 'key',
@@ -108,6 +109,7 @@ export default {
       this.changeAgendaItemEndsAt(val, oldVal);
     },
     localAgendaItem: {
+      deep: true,
       handler(newValue) {
         this.$emit('update:agendaItem', { ...newValue });
       },
@@ -124,6 +126,9 @@ export default {
   },
   methods: {
     changeAgendaItemEndsAt(val, oldVal) {
+      if(!oldVal) {
+        return;
+      }
       const curTime = parseInt(val);
       const oldTime = parseInt(oldVal);
       const diffTime = curTime - oldTime;
