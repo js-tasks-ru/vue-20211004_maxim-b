@@ -1,32 +1,39 @@
 <template>
   <fieldset class="agenda-item-form">
-    <button type="button" class="agenda-item-form__remove-button">
+    <button type="button" class="agenda-item-form__remove-button" @click="$emit('remove')">
       <ui-icon icon="trash" />
     </button>
 
     <ui-form-group>
-      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" />
+      <ui-dropdown title="Тип" :options="$options.agendaItemTypeOptions" name="type" v-model="localAgendaItem.type" />
     </ui-form-group>
 
     <div class="agenda-item-form__row">
       <div class="agenda-item-form__col">
         <ui-form-group label="Начало">
-          <ui-input type="time" placeholder="00:00" name="startsAt" />
+          <ui-input type="time" placeholder="00:00" name="startsAt" v-model="localAgendaItem.startAt" />
         </ui-form-group>
       </div>
       <div class="agenda-item-form__col">
         <ui-form-group label="Окончание">
-          <ui-input type="time" placeholder="00:00" name="endsAt" />
+          <ui-input type="time" placeholder="00:00" name="endsAt" v-model="localAgendaItem.endsAt" />
         </ui-form-group>
       </div>
     </div>
 
-    <ui-form-group label="Заголовок">
-      <ui-input name="title" />
-    </ui-form-group>
-    <ui-form-group label="Описание">
-      <ui-input multiline name="description" />
-    </ui-form-group>
+    <template v-if="$options.agendaItemFormSchemas[localAgendaItem.type]">
+      <template v-for="(option, key) in $options.agendaItemFormSchemas[localAgendaItem.type]">
+        <ui-form-group :label="option.label">
+          <component
+            :is="option.component"
+            :multiline="option.props.multiline"
+            :options="option.props.options"
+            :title="option.props.title"
+            v-model="localAgendaItem[option.props.name]"
+          ></component>
+        </ui-form-group>
+      </template>
+    </template>
   </fieldset>
 </template>
 
@@ -35,6 +42,7 @@ import UiIcon from './UiIcon';
 import UiFormGroup from './UiFormGroup';
 import UiInput from './UiInput';
 import UiDropdown from './UiDropdown';
+import { isEqual } from 'lodash-es';
 
 const agendaItemTypeIcons = {
   registration: 'key',
@@ -151,14 +159,61 @@ const agendaItemFormSchemas = {
   },
 };
 
+const zeroPad = (num, places) => String(num).padStart(places, '0');
+
 export default {
   name: 'MeetupAgendaItemForm',
-
+  created() {
+    //console.log(agendaItemFormSchemas);
+    console.log(agendaItemFormSchemas[this.localAgendaItem.type]);
+  },
   components: { UiIcon, UiFormGroup, UiInput, UiDropdown },
-
   agendaItemTypeOptions,
   agendaItemFormSchemas,
-
+  watch: {
+     'localAgendaItem.startsAt':  function(val, oldVal) {
+       this.changeAgendaItemEndsAt(val, oldVal);
+     },
+    localAgendaItem: {
+      deep: true,
+      handler(newValue) {
+        this.$emit('update:agendaItem', { ...newValue });
+      },
+    },
+    agendaItem: {
+      // Добавим immediate для инициализации
+      immediate: true,
+      handler(newValue) {
+        if (!isEqual(this.localAgendaItem, newValue)) {
+          this.localAgendaItem = { ...newValue };
+        }
+      },
+    },
+  },
+  methods: {
+    changeAgendaItemEndsAt(val, oldVal) {
+      if(!oldVal) {
+        return;
+      }
+      const curTime = parseInt(val);
+      const oldTime = parseInt(oldVal);
+      const diffTime = curTime - oldTime;
+      let [endAtHour, endAtTime] = this.localAgendaItem.endsAt.split(":");
+      let hour = parseInt(endAtHour);
+      if(hour > 0) {
+        hour += parseInt(diffTime);
+        if(hour < 0 || hour > 23) {
+          hour = Math.abs(24 - Math.abs(hour));
+        }
+        this.localAgendaItem.endsAt = [zeroPad(hour,2), endAtTime].join(":");
+      }
+    }
+  },
+  data() {
+    return {
+      localAgendaItem: undefined
+    }
+  },
   props: {
     agendaItem: {
       type: Object,
